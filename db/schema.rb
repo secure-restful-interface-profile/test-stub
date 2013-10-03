@@ -11,14 +11,61 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130913201231) do
+ActiveRecord::Schema.define(version: 20131003180645) do
+
+  create_table "encounters", force: true do |t|
+    t.string   "status"
+    t.string   "enc_class"
+    t.string   "enc_type"
+    t.string   "participant"
+    t.string   "participanttype"
+    t.string   "start"
+    t.string   "length"
+    t.string   "priority"
+    t.string   "location"
+    t.string   "locationperiod"
+    t.string   "serviceprovider"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "patient_id"
+  end
+
+  create_table "observations", force: true do |t|
+    t.string   "name"
+    t.string   "obs_type"
+    t.string   "value"
+    t.string   "interpretation"
+    t.string   "comments"
+    t.string   "issued"
+    t.string   "period"
+    t.string   "status"
+    t.string   "reliability"
+    t.string   "bodysite"
+    t.string   "methodcode"
+    t.string   "methodtext"
+    t.string   "performer"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "patient_id"
+    t.integer  "encounter_id"
+  end
 
   create_table "patients", force: true do |t|
     t.string   "givenname"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "familyname"
-    t.string   "textname"
+    t.string   "gender"
+    t.string   "birthdate"
+    t.string   "telecom"
+    t.boolean  "isdeceased"
+    t.string   "address"
+    t.string   "maritalstatus"
+    t.string   "outsidecontact"
+    t.string   "outsidecontacttelecom"
+    t.string   "outsidecontactaddress"
+    t.string   "primarylanguage"
+    t.boolean  "active"
   end
 
   create_table "rails_admin_histories", force: true do |t|
