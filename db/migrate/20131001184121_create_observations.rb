@@ -2,7 +2,7 @@ class CreateObservations < ActiveRecord::Migration
   def change
     create_table :observations do |t|
       t.string :name
-      t.string :type
+      t.string :obs_type
       t.string :value
       t.string :interpretation
       t.string :comments

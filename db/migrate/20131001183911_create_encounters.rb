@@ -3,8 +3,8 @@ class CreateEncounters < ActiveRecord::Migration
     create_table :encounters do |t|
 
       t.string :status
-      t.string :class
-      t.string :type
+      t.string :enc_class
+      t.string :enc_type
       t.string :participant
       t.string :participanttype
       t.string :start 

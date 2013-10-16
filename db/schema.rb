@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131003180645) do
+ActiveRecord::Schema.define(version: 20131003175551) do
 
   create_table "encounters", force: true do |t|
     t.string   "status"
@@ -52,20 +52,20 @@ ActiveRecord::Schema.define(version: 20131003180645) do
 
   create_table "patients", force: true do |t|
     t.string   "givenname"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "familyname"
     t.string   "gender"
     t.string   "birthdate"
     t.string   "telecom"
-    t.boolean  "isdeceased"
     t.string   "address"
+    t.boolean  "isdeceased"
     t.string   "maritalstatus"
     t.string   "outsidecontact"
     t.string   "outsidecontacttelecom"
     t.string   "outsidecontactaddress"
     t.string   "primarylanguage"
     t.boolean  "active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "rails_admin_histories", force: true do |t|
