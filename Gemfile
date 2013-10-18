@@ -35,6 +35,9 @@ end
 # Rails Admin for managing data
 gem 'rails_admin'
 
+# Twitter Bootstrap for stylesheets
+gem 'bootstrap-sass'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
