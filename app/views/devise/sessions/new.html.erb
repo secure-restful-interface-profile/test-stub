@@ -6,7 +6,7 @@
     <div id="branding">
       <%= image_tag "teststub_welcome.png", :id => 'imgLogo', :title => 'VistA Novo welcomes you!', :alt => 'VistA Novo logo' %>
     </div>
-    </center>
+    
     <div id="panelLogin" class="panel">
       <%= f.label :email %>
       <%= f.text_field :email %>
@@ -25,6 +25,7 @@
       <%= render :partial => "devise/shared/links" %>
 
     </div>
+    </center>
   </div>
   <div id="cap-bottom"></div>
 </div><!-- END #login -->
