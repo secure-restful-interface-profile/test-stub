@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140909215225) do
+ActiveRecord::Schema.define(version: 20140916161226) do
 
   create_table "conditions", force: true do |t|
     t.string   "text_status"
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 20140909215225) do
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "patient_id"
   end
 
   create_table "encounters", force: true do |t|
@@ -118,6 +119,7 @@ ActiveRecord::Schema.define(version: 20140909215225) do
     t.string   "package_content_code"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "patient_id"
   end
 
   create_table "observations", force: true do |t|
