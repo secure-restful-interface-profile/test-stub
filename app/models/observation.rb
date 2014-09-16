@@ -1,4 +1,7 @@
 class Observation < ActiveRecord::Base
+  belongs_to  :patient
+  belongs_to  :encounter
+  
   rails_admin do 
     field :name do
       label "Name"

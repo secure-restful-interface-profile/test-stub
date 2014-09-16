@@ -1,5 +1,6 @@
 class Encounter < ActiveRecord::Base
-  has_many :observations
+  belongs_to  :patient
+  has_many    :observations
 
   rails_admin do 
     field :patient_id do

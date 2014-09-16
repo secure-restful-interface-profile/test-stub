@@ -1,6 +1,8 @@
 class Patient < ActiveRecord::Base
   has_many :encounters
   has_many :observations
+  has_many :medications
+  has_many :conditions
   
   rails_admin do 
     field :givenname do
