@@ -38,6 +38,10 @@ gem 'rails_admin'
 # Twitter Bootstrap for stylesheets
 gem 'bootstrap-sass'
 
+# OAuth2 Access Token validation support
+gem 'omniauth'
+gem 'omniauth-oauth2'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
@@ -48,7 +52,7 @@ gem 'bootstrap-sass'
 # gem 'capistrano', group: :development
 
 # Use debugger
-# gem 'debugger', group: [:development, :test]
+gem 'debugger', group: [:development, :test]
 
 
 gem "devise"
