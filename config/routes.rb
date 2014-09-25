@@ -57,6 +57,9 @@ TestStub::Application.routes.draw do
   #     resources :products
   #   end
 
+  get 'api/:model' => 'api#index'
+  get 'api/:model/:id' => 'api#show'
+  
   root :to => "home#index"
 
 end
