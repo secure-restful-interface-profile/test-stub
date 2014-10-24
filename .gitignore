@@ -14,3 +14,8 @@ capybara-*.html
 **.orig
 rerun.txt
 pickle-email-*.html
+/config/*.key
+/config/*.crt
+/config/*.csr
+/config/*.pub
+/config/*server

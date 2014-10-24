@@ -42,6 +42,9 @@ gem 'bootstrap-sass'
 gem 'omniauth'
 gem 'omniauth-oauth2'
 
+# JWT/JWK handling
+gem 'json-jwt'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
@@ -52,7 +55,7 @@ gem 'omniauth-oauth2'
 # gem 'capistrano', group: :development
 
 # Use debugger
-gem 'debugger', group: [:development, :test]
+gem 'byebug', group: [:development, :test]
 
 
 gem "devise"

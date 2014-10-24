@@ -59,7 +59,9 @@ TestStub::Application.routes.draw do
 
   get 'api/:model' => 'api#index'
   get 'api/:model/:id' => 'api#show'
+
+  # jwks_uri endpoint
+  get 'jwks' => 'jwks#index'
   
   root :to => "home#index"
-
 end
