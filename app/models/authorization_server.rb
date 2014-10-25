@@ -23,9 +23,11 @@ class AuthorizationServer
   #   +@configuration+::    Hash of server capabilities and endpoints
 
   def initialize(auth_server_uri, rsrc_server_uri)
-    byebug
     @auth_server_uri = auth_server_uri
     @rsrc_server_uri = rsrc_server_uri
+
+    Rails.logger.info "========== @auth_server_uri = " + @auth_server_uri + "=========="
+    Rails.logger.info "========== @rsrc_server_uri = " + @rsrc_server_uri + "=========="
 
     # Establish a connection object that will be reused during communication 
     # with the authorization server
@@ -72,7 +74,6 @@ class AuthorizationServer
   #   +boolean+::           +true+ if access allowed, otherwise +false+
 
   def authorize_request(client_request)
-    byebug
     # Get access token from client request
     #access_token = client_request.env["omniauth.auth"]
     access_token = "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTQyMjUxNTksImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cHM6XC9cL2FzLXZhLm1pdHJlLm9yZ1wvIiwianRpIjoiOTRjYWNjNGEtMTQ5NC00MDE0LTkyMTEtNmIxZDViODBiOTQ5IiwiaWF0IjoxNDE0MTgxOTU5fQ.PGQSiZiO6sAvM5kpIdelxy-gtESJzSRrQ-hYfunIVl0BIeCRA0Fm4FII5LEZ92Tiq-nJckfgJVS5HdqxmtUh7db-FAt4MvkvhEBMhIOW-ePbNuOHjTPHQgORIF1BoXqqMC_BV6H4H0UVKRtoWxuk8qh4cAwXprVEcuDBwqcN5AhweW0WoFcEppdyjrTd99g3b6LV7FQJT5xjUIBCdbfG-3C01l8jDHkhKISPKfufa2mJvzxYgHkcIgeftK3xL5BcluixYOF7Pz_Chry2zLekZ5sFkoPtxdektWED_Ws7aFjSaB9FZNM_SOrcEOtwQLcrkCENkEEIjcdP8o5Hxgd2NQ"
@@ -86,7 +87,10 @@ class AuthorizationServer
       request.headers["Authorization"]   = "JWT " + jwt_token
       request.params["token"]            = access_token
     end
-    byebug
+
+    #Rails.logger.info "--------- auth_response = " + auth_response.inspect + "----------"
+    #Rails.logger.info "--------- auth_response['valid'] = " + auth_response["valid"] + "----------"
+    Rails.logger.info "--------- auth_response.body = " + auth_response.body + "----------"
 
     # Use introspection info to determine validity of access token for request
     valid_access_token?(client_request, auth_response)
@@ -161,6 +165,7 @@ class AuthorizationServer
       result &&= validate_scope(client_request, token_claims) if result
     end
 
+    Rails.logger.info "----- valid_access_token? = " + result.to_s + "-----"
     result
   end
 
@@ -177,9 +182,11 @@ class AuthorizationServer
 
   def validate_expiration(auth_response)
     if auth_response["expires_at"].blank?
+      Rails.logger.info "----- no expiration time provided in access token -----"
       # No expiration time provided
       true
     else
+      Rails.logger.info "----- auth_response['expires_at'] = " + auth_response["expires_at"].inspect + "-----"
       (auth_response["expires_at"].to_i >= Time.now.to_i)
     end
   end
@@ -214,6 +221,8 @@ class AuthorizationServer
 
   def validate_scope(client_request, token_claims)
     claims = token_claims.split[' ']
+
+    Rails.logger.info "----- claims = " + claims.inspect + "-----"
     uri = URI(client_request.uri)
 
     # Remove initial '/' from path to get resource name

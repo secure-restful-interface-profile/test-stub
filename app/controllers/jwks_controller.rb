@@ -38,6 +38,8 @@ class JwksController < ApplicationController
   #   +JSON+::                JWK set containing public key for the Test Stub
 
   def index
+    Rails.logger.info "========= Call to /jwks endpoint =========="
+
     # Build JWK set from test stub's public key
     jwks = JSON::JWK.new(Application.public_key)
 
