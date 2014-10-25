@@ -88,6 +88,7 @@ class AuthorizationServer
       request.params["token"]            = access_token
     end
 
+    Rails.logger.info "--------- request.headers = " + request.headers.inspect + "----------"
     #Rails.logger.info "--------- auth_response = " + auth_response.inspect + "----------"
     #Rails.logger.info "--------- auth_response['valid'] = " + auth_response["valid"] + "----------"
     Rails.logger.info "--------- auth_response.body = " + auth_response.body + "----------"
