@@ -57,4 +57,13 @@ class Application
   	File.read("./config/authorization_server")
   end
 
+  #-------------------------------------------------------------------------------
+
+	##
+	#
+	
+  def self.test_access_token
+  	File.read("./config/test_access_token")
+  end
+  
 end

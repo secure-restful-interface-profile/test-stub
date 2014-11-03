@@ -32,7 +32,11 @@ class AuthorizationServer
     # Establish a connection object that will be reused during communication 
     # with the authorization server
 
-    @connection = Faraday.new(@auth_uri, :ssl => {:verify => false})
+    @connection = Faraday.new(@auth_uri, :ssl => {:verify => false}) do |builder|
+      builder.request     :url_encoded    # Encode request parameters as "www-form-urlencoded"
+      builder.response    :logger         # Log request and response to STDOUT
+      builder.adapter     :net_http       # Perform requests with Net::HTTP
+    end
 
     # Get authorization server endpoints and configuration settings
     response = @connection.get("#{@auth_server_uri}/.well-known/openid-configuration")
@@ -76,23 +80,25 @@ class AuthorizationServer
   def authorize_request(client_request)
     # Get access token from client request
     #access_token = client_request.env["omniauth.auth"]
-    access_token = "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTQyMjUxNTksImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cHM6XC9cL2FzLXZhLm1pdHJlLm9yZ1wvIiwianRpIjoiOTRjYWNjNGEtMTQ5NC00MDE0LTkyMTEtNmIxZDViODBiOTQ5IiwiaWF0IjoxNDE0MTgxOTU5fQ.PGQSiZiO6sAvM5kpIdelxy-gtESJzSRrQ-hYfunIVl0BIeCRA0Fm4FII5LEZ92Tiq-nJckfgJVS5HdqxmtUh7db-FAt4MvkvhEBMhIOW-ePbNuOHjTPHQgORIF1BoXqqMC_BV6H4H0UVKRtoWxuk8qh4cAwXprVEcuDBwqcN5AhweW0WoFcEppdyjrTd99g3b6LV7FQJT5xjUIBCdbfG-3C01l8jDHkhKISPKfufa2mJvzxYgHkcIgeftK3xL5BcluixYOF7Pz_Chry2zLekZ5sFkoPtxdektWED_Ws7aFjSaB9FZNM_SOrcEOtwQLcrkCENkEEIjcdP8o5Hxgd2NQ"
+    access_token = Application.test_access_token
 
     # Call authorization server to perform introspection on access token
-    auth_response = @connection.post do |request|
-      request.url(@configuration["introspection_endpoint"])
+    auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
+      # Pass access token as form data
+      request.body = { 
+        "client_id" => Application.client_id, 
+        "client_assertion_type" => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+        "client_assertion" => jwt_token, 
+        "token" => access_token 
+      }.to_param
 
-      request.headers["Content-type"]    = "application/x-www-form-urlencoded"
-      request.headers["Accept"]          = "application/json"
-      request.headers["Authorization"]   = "JWT " + jwt_token
-      request.params["token"]            = access_token
-      
-      Rails.logger.info "--------- request.headers = " + request.headers.inspect + "----------"
+      Rails.logger.info "--------- request.headers = " + request.headers.inspect + " ----------"
+      Rails.logger.info "--------- request.body = " + request.body.inspect + " ---------"
     end
 
-    #Rails.logger.info "--------- auth_response = " + auth_response.inspect + "----------"
-    #Rails.logger.info "--------- auth_response['valid'] = " + auth_response["valid"] + "----------"
-    Rails.logger.info "--------- auth_response.body = " + auth_response.body + "----------"
+    #Rails.logger.info "--------- auth_response = " + auth_response.inspect + " ----------"
+    #Rails.logger.info "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
+    Rails.logger.info "--------- auth_response.body = " + auth_response.body + " ----------"
 
     # Use introspection info to determine validity of access token for request
     valid_access_token?(client_request, auth_response)
@@ -118,7 +124,7 @@ class AuthorizationServer
 
   #-------------------------------------------------------------------------------
 
-  CLAIM_EXPIRATION = 60         # Expiration in seconds
+  CLAIM_EXPIRATION = 3600         # Expiration in seconds
 
   ##
   # This method defines the claims for the JSON Web Token (JWT) we use to
@@ -131,14 +137,12 @@ class AuthorizationServer
     now = Time.now.to_i
 
     {
-      iss: @rsrc_server_uri,                  # Issuer (Resource Server)
-      aud: @auth_server_uri,                  # Intended audience (Authorization Server)
-      azp: Application.client_id,             # Client ID given to us from 
-                                              #    authorization server
-      sub: @rsrc_server_uri,                  # Subject of request (Resource Server)
-      iat: now,                               # Time of issue
-      exp: now + CLAIM_EXPIRATION,            # Expiration time (60 seconds from now)
-      jti: "#{now}/#{SecureRandom.hex(18)}",  # Unique ID for request
+      iss: Application.client_id,                   # Issuer (Resource Server)
+      sub: Application.client_id,                   # Subject of request (Resource Server)
+      aud: "https://as-va.mitre.org/introspect",    # Intended audience (Authorization Server)
+      iat: now,                                     # Time of issue
+      exp: now + CLAIM_EXPIRATION,                  # Expiration time
+      jti: "#{now}/#{SecureRandom.hex(18)}",        # Unique ID for request
     }
   end
 
@@ -167,7 +171,7 @@ class AuthorizationServer
       result &&= validate_scope(client_request, token_claims) if result
     end
 
-    Rails.logger.info "----- valid_access_token? = " + result.to_s + "-----"
+    Rails.logger.info "----- valid_access_token? = " + result.to_s + " -----"
     result
   end
 
@@ -188,7 +192,7 @@ class AuthorizationServer
       # No expiration time provided
       true
     else
-      Rails.logger.info "----- auth_response['expires_at'] = " + auth_response["expires_at"].inspect + "-----"
+      Rails.logger.info "----- auth_response['expires_at'] = " + auth_response["expires_at"].inspect + " -----"
       (auth_response["expires_at"].to_i >= Time.now.to_i)
     end
   end
@@ -224,7 +228,7 @@ class AuthorizationServer
   def validate_scope(client_request, token_claims)
     claims = token_claims.split[' ']
 
-    Rails.logger.info "----- claims = " + claims.inspect + "-----"
+    Rails.logger.info "----- claims = " + claims.inspect + " -----"
     uri = URI(client_request.uri)
 
     # Remove initial '/' from path to get resource name

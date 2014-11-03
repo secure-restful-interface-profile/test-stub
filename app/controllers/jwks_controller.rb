@@ -41,8 +41,17 @@ class JwksController < ApplicationController
     Rails.logger.info "========= Call to /jwks endpoint =========="
 
     # Build JWK set from test stub's public key
-    jwks = JSON::JWK.new(Application.public_key)
+    jwks = { 
+      keys: [{
+        kty:  "RSA", 
+        n:    UrlSafeBase64.encode64(Application.public_key.n.to_s(2)), 
+        e:    UrlSafeBase64.encode64(Application.public_key.e.to_s(2)),
+        alg:  "RS256",
+        kid:  "rsa1"
+      }]
+    }
 
+    #jwks = JSON::JWK.new(Application.public_key)
     render json: jwks
   end
 

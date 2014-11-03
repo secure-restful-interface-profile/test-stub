@@ -19,3 +19,5 @@ pickle-email-*.html
 /config/*.csr
 /config/*.pub
 /config/*server
+/config/*.id
+/config/*access_token*
