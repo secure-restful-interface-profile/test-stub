@@ -77,7 +77,7 @@ class AuthorizationServer
   # Returns:  
   #   +boolean+::           +true+ if access allowed, otherwise +false+
 
-  def authorize_request(client_request)
+  def authorize_request(client_request, test = false)
     # Get access token from client request
     #access_token = client_request.env["omniauth.auth"]
     access_token = Application.test_access_token
@@ -86,10 +86,10 @@ class AuthorizationServer
     auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
       # Pass access token as form data
       request.body = { 
-        "client_id" => Application.client_id, 
+        "client_id"             => Application.client_id, 
         "client_assertion_type" => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-        "client_assertion" => jwt_token, 
-        "token" => access_token 
+        "client_assertion"      => jwt_token, 
+        "token"                 => access_token 
       }.to_param
 
       Rails.logger.info "--------- request.headers = " + request.headers.inspect + " ----------"
@@ -100,8 +100,12 @@ class AuthorizationServer
     #Rails.logger.info "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
     Rails.logger.info "--------- auth_response.body = " + auth_response.body + " ----------"
 
-    # Use introspection info to determine validity of access token for request
-    valid_access_token?(client_request, auth_response)
+    if test
+      auth_response
+    else
+      # Use introspection info to determine validity of access token for request
+      valid_access_token?(client_request, auth_response)
+    end
   end
 
   #-------------------------------------------------------------------------------
