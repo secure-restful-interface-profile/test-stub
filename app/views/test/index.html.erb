@@ -1,2 +1,7 @@
 <h1>The Authorization Server says on introspection:</h1>
 <%= raw(@response.body) %>
+
+<h1>Complete response</h1>
+<p>
+  <%= @response.inspect %>
+</p>

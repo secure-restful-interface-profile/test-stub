@@ -101,7 +101,7 @@ class AuthorizationServer
     Rails.logger.info "--------- auth_response.body = " + auth_response.body + " ----------"
 
     if test
-      auth_response
+      return auth_response
     else
       # Use introspection info to determine validity of access token for request
       valid_access_token?(client_request, auth_response)
