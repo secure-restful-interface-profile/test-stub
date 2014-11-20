@@ -211,7 +211,7 @@ class AuthorizationServer
       # No expiration time provided
       true
     else
-      Rails.logger.debug "----- token_claims['exp'] = #{token_claims["expires_at"].inspect} -----"
+      Rails.logger.debug "----- token_claims['exp'] = #{token_claims["exp"].inspect} -----"
       expiration_time = Time.parse(token_claims["exp"])
       (expiration_time >= Time.now)
     end
@@ -235,8 +235,10 @@ class AuthorizationServer
     Rails.logger.debug "----- claims = #{claims.inspect} -----"
     uri = URI(client_request.uri)
 
-    # Remove initial '/' from path to get resource name
-    resource = uri.path.from(1)
+    # Parse path to get resource name
+    resource = uri.path.split('/').last
+    resource = resource.split('.').first if uri.path.include?('.')
+    
     Rails.logger.debug "----- resource = #{resource.inspect} -----"
 
     claims.include?(resource)
