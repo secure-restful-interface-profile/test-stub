@@ -181,7 +181,7 @@ class AuthorizationServer
   #   +boolean+::           +true+ if access allowed, otherwise +false+
 
   def valid_access_token?(client_request, auth_response)
-    if result = (auth_response["valid"] == "true")
+    if result = (auth_response["status"] == 200)
       token_claims = auth_response.body
 
       # Authorize request based on claims of access token
