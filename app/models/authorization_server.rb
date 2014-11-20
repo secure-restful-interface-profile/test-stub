@@ -83,7 +83,7 @@ class AuthorizationServer
     # Get access token from client request
     authorization = client_request.env["HTTP_AUTHORIZATION"]
     Rails.logger.debug "--------- authorization = #{authorization} ----------"
-    
+
     if authorization
       authorization = authorization.split(' ')
       if authorization.first == 'Bearer'
@@ -107,7 +107,7 @@ class AuthorizationServer
         Rails.logger.debug "--------- request.body = " + request.body.inspect + " ---------"
       end
 
-      #Rails.logger.debug "--------- auth_response = " + auth_response.inspect + " ----------"
+      Rails.logger.debug "--------- auth_response = " + auth_response.inspect + " ----------"
       #Rails.logger.debug "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
       Rails.logger.debug "--------- auth_response.body = " + auth_response.body + " ----------"
 
