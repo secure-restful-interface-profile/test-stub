@@ -181,7 +181,6 @@ class AuthorizationServer
   #   +boolean+::           +true+ if access allowed, otherwise +false+
 
   def valid_access_token?(client_request, auth_response)
-    byebug
     if result = (auth_response.status == 200)
       token_claims = JSON.parse(auth_response.body)
 
@@ -207,7 +206,6 @@ class AuthorizationServer
   #   +boolean+::           +true+ if token has not expired, otherwise +false+
 
   def validate_expiration(token_claims)
-    byebug
     if token_claims["exp"].blank?
       Rails.logger.debug "----- no expiration time provided in access token -----"
       # No expiration time provided
@@ -232,7 +230,6 @@ class AuthorizationServer
   #   +boolean+::           +true+ if request within token scope, otherwise +false+
 
   def validate_scope(client_request, token_claims)
-    byebug
     claims = token_claims["scope"].split(' ')
 
     Rails.logger.debug "----- claims = #{claims.inspect} -----"
