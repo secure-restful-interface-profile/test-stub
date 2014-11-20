@@ -79,9 +79,11 @@ class AuthorizationServer
 
   def authorize_request(client_request, test = false)
     # Get access token from client request
-    #access_token = client_request.env["omniauth.auth"]
-    access_token = Application.test_access_token
+    access_token = client_request.env["omniauth.auth"]
+    #access_token = Application.test_access_token
 
+    Rails.logger.debug "////////// Access token = #{access_token} //////////"
+    
     # Call authorization server to perform introspection on access token
     auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
       # Pass access token as form data
