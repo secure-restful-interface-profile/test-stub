@@ -232,6 +232,8 @@ class AuthorizationServer
     claims = token_claims["scope"].split(' ')
 
     Rails.logger.debug "----- claims = #{claims.inspect} -----"
+    Rails.logger.debug "----- client_request = #{client_request.inspect} -----"
+
     uri = URI(client_request)
 
     # Parse path to get resource name
