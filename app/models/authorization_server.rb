@@ -79,17 +79,16 @@ class AuthorizationServer
 
   def authorize_request(client_request, test = false)
     #access_token = Application.test_access_token
-    access_token = "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTY1MTc3MTcsImF1ZCI6WyJlOTg0OWNmMS0wZGUyLTRiMzYtYWMzNy1hYjk1M2Q3OGM3Y2YiXSwiaXNzIjoiaHR0cHM6XC9cL2FzLXZhLm1pdHJlLm9yZ1wvIiwianRpIjoiZTVlZWQzMjYtNjljZC00NjFhLTk4MzYtYzJiMjhkN2I5NTkwIiwiaWF0IjoxNDE2NTE0MTE3fQ.VDhPLYosO_CovfBWBXHVuZk9kX0_znfh1v5ZuHaKCHnzhwM2qfLext400Ac9pIpnbNwYNGT0FnGKoqB1mrRFrfuzp5kbtc__o1N1VNEHm-EM03eGjiNGRnBA0hf2TPidQKi7H0oCr1G3jxZmZ373eIz838_gjew2Ia5KpdwMov5PaejYvyvaEGkjOhcb63phsfQPyDKRmGZkTLYRdHMCZL3j6UesFeZrSJaS5NQk0mzzR-fFPKIEyXOKhCi5zogEFiWNq08wSiiSXh_JB58sY_fdbNrItwSml80pR1CQprQftIurubcYVz6TwNKxhcTf7etOWSFPe0ewGwr7riCfdA"
 
     # Get access token from client request
-    # authorization = client_request.env["HTTP_AUTHORIZATION"]
-    # Rails.logger.debug "--------- authorization = #{authorization} ----------"
+    authorization = client_request.env["HTTP_AUTHORIZATION"]
+    Rails.logger.debug "--------- authorization = #{authorization} ----------"
 
-    # if authorization
-    #   authorization = authorization.split(' ')
-    #   if authorization.first == 'Bearer'
-    #     access_token = authorization.last
-    #   end
+    if authorization
+      authorization = authorization.split(' ')
+      if authorization.first == 'Bearer'
+        access_token = authorization.last
+      end
 
       Rails.logger.debug "********** Request = #{client_request.inspect} **********"
       Rails.logger.debug "////////// Access token = #{access_token.inspect} //////////"
@@ -118,10 +117,10 @@ class AuthorizationServer
         # Use introspection info to determine validity of access token for request
         valid_access_token?(client_request, auth_response)
       end
-    # else
-    #   # No access token
-    #   false
-    # end
+    else
+      # No access token
+      false
+    end
   end
 
   #-------------------------------------------------------------------------------
@@ -238,7 +237,7 @@ class AuthorizationServer
     # Parse path to get resource name
     resource = uri.path.split('/').last
     resource = resource.split('.').first if uri.path.include?('.')
-    
+
     Rails.logger.debug "----- resource = #{resource.inspect} -----"
 
     claims.include?(resource)
