@@ -83,7 +83,7 @@ class AuthorizationServer
     #access_token = Application.test_access_token
 
     Rails.logger.debug "********** Request = #{client_request.inspect} **********"
-    Rails.logger.debug "////////// Access token = #{access_token} //////////"
+    Rails.logger.debug "////////// Access token = #{access_token.inspect} //////////"
 
     # Call authorization server to perform introspection on access token
     auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
