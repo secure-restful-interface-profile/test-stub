@@ -79,16 +79,17 @@ class AuthorizationServer
 
   def authorize_request(client_request, test = false)
     #access_token = Application.test_access_token
+    access_token = "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTY1MTc3MTcsImF1ZCI6WyJlOTg0OWNmMS0wZGUyLTRiMzYtYWMzNy1hYjk1M2Q3OGM3Y2YiXSwiaXNzIjoiaHR0cHM6XC9cL2FzLXZhLm1pdHJlLm9yZ1wvIiwianRpIjoiZTVlZWQzMjYtNjljZC00NjFhLTk4MzYtYzJiMjhkN2I5NTkwIiwiaWF0IjoxNDE2NTE0MTE3fQ.VDhPLYosO_CovfBWBXHVuZk9kX0_znfh1v5ZuHaKCHnzhwM2qfLext400Ac9pIpnbNwYNGT0FnGKoqB1mrRFrfuzp5kbtc__o1N1VNEHm-EM03eGjiNGRnBA0hf2TPidQKi7H0oCr1G3jxZmZ373eIz838_gjew2Ia5KpdwMov5PaejYvyvaEGkjOhcb63phsfQPyDKRmGZkTLYRdHMCZL3j6UesFeZrSJaS5NQk0mzzR-fFPKIEyXOKhCi5zogEFiWNq08wSiiSXh_JB58sY_fdbNrItwSml80pR1CQprQftIurubcYVz6TwNKxhcTf7etOWSFPe0ewGwr7riCfdA"
 
     # Get access token from client request
-    authorization = client_request.env["HTTP_AUTHORIZATION"]
-    Rails.logger.debug "--------- authorization = #{authorization} ----------"
+    # authorization = client_request.env["HTTP_AUTHORIZATION"]
+    # Rails.logger.debug "--------- authorization = #{authorization} ----------"
 
-    if authorization
-      authorization = authorization.split(' ')
-      if authorization.first == 'Bearer'
-        access_token = authorization.last
-      end
+    # if authorization
+    #   authorization = authorization.split(' ')
+    #   if authorization.first == 'Bearer'
+    #     access_token = authorization.last
+    #   end
 
       Rails.logger.debug "********** Request = #{client_request.inspect} **********"
       Rails.logger.debug "////////// Access token = #{access_token.inspect} //////////"
@@ -117,10 +118,10 @@ class AuthorizationServer
         # Use introspection info to determine validity of access token for request
         valid_access_token?(client_request, auth_response)
       end
-    else
-      # No access token
-      false
-    end
+    # else
+    #   # No access token
+    #   false
+    # end
   end
 
   #-------------------------------------------------------------------------------
@@ -168,9 +169,8 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
 
   ##
-  # This method validates the access token passed to us by the client.  We use
-  # the introspection endpoint of the Authorization Server to determine the claims
-  # for the type of information allowed by the access token and verify that the 
+  # This method validates the access token passed to us by the client by checking
+  # the type of information allowed by the access token and and verifying that the 
   # request is consistent with those claims.
   #
   # Params:
@@ -181,16 +181,17 @@ class AuthorizationServer
   #   +boolean+::           +true+ if access allowed, otherwise +false+
 
   def valid_access_token?(client_request, auth_response)
-    if result = (auth_response["status"] == 200)
-      token_claims = auth_response.body
+    byebug
+    if result = (auth_response.status == 200)
+      token_claims = JSON.parse(auth_response.body)
 
       # Authorize request based on claims of access token
-      result &&= validate_expiration(auth_response)
-      result &&= validate_audience(client_request, token_claims) if result
-      result &&= validate_scope(client_request, token_claims) if result
+      result &&= token_claims["active"]
+      result &&= validate_expiration(token_claims)              if result
+      result &&= validate_scope(client_request, token_claims)   if result
     end
 
-    Rails.logger.debug "----- valid_access_token? = " + result.to_s + " -----"
+    Rails.logger.debug "----- valid_access_token? = #{result.to_s} -----"
     result
   end
 
@@ -200,36 +201,22 @@ class AuthorizationServer
   # This method determines whether the access token has expired.
   #
   # Params:
-  #   +auth_response+::     Response from the Authorization Server introspection
+  #   +token_claims+::      Claims from access token introspection
   #
   # Returns:
   #   +boolean+::           +true+ if token has not expired, otherwise +false+
 
-  def validate_expiration(auth_response)
-    if auth_response["expires_at"].blank?
+  def validate_expiration(token_claims)
+    byebug
+    if token_claims["exp"].blank?
       Rails.logger.debug "----- no expiration time provided in access token -----"
       # No expiration time provided
       true
     else
-      Rails.logger.debug "----- auth_response['expires_at'] = " + auth_response["expires_at"].inspect + " -----"
-      (auth_response["expires_at"].to_i >= Time.now.to_i)
+      Rails.logger.debug "----- token_claims['exp'] = #{token_claims["expires_at"].inspect} -----"
+      expiration_time = Time.parse(token_claims["exp"])
+      (expiration_time >= Time.now)
     end
-  end
-
-  #-------------------------------------------------------------------------------
- 
-  ##
-  # This method determines whether the access token has expired.
-  #
-  # Params:
-  #   +client_request+::    Original request from the client seeking access
-  #   +token_claims+::      Claims from access token introspection
-  #
-  # Returns:
-  #   +boolean+::           +true+ if request matches token audience, otherwise +false+
-
-  def validate_audience(client_request, token_claims)
-    true  # for now...  not sure what to do with this yet...
   end
 
   #-------------------------------------------------------------------------------
@@ -245,13 +232,15 @@ class AuthorizationServer
   #   +boolean+::           +true+ if request within token scope, otherwise +false+
 
   def validate_scope(client_request, token_claims)
-    claims = token_claims.split[' ']
+    byebug
+    claims = token_claims["scope"].split(' ')
 
-    Rails.logger.debug "----- claims = " + claims.inspect + " -----"
+    Rails.logger.debug "----- claims = #{claims.inspect} -----"
     uri = URI(client_request.uri)
 
     # Remove initial '/' from path to get resource name
     resource = uri.path.from(1)
+    Rails.logger.debug "----- resource = #{resource.inspect} -----"
 
     claims.include?(resource)
   end
