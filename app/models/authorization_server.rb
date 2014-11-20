@@ -26,8 +26,8 @@ class AuthorizationServer
     @auth_server_uri = auth_server_uri
     @rsrc_server_uri = rsrc_server_uri
 
-    Rails.logger.info "========== @auth_server_uri = " + @auth_server_uri + "=========="
-    Rails.logger.info "========== @rsrc_server_uri = " + @rsrc_server_uri + "=========="
+    Rails.logger.debug "========== @auth_server_uri = " + @auth_server_uri + "=========="
+    Rails.logger.debug "========== @rsrc_server_uri = " + @rsrc_server_uri + "=========="
 
     # Establish a connection object that will be reused during communication 
     # with the authorization server
@@ -82,8 +82,9 @@ class AuthorizationServer
     access_token = client_request.env["omniauth.auth"]
     #access_token = Application.test_access_token
 
+    Rails.logger.debug "********** Request = #{request.inspect} **********"
     Rails.logger.debug "////////// Access token = #{access_token} //////////"
-    
+
     # Call authorization server to perform introspection on access token
     auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
       # Pass access token as form data
@@ -94,13 +95,13 @@ class AuthorizationServer
         "token"                 => access_token 
       }.to_param
 
-      Rails.logger.info "--------- request.headers = " + request.headers.inspect + " ----------"
-      Rails.logger.info "--------- request.body = " + request.body.inspect + " ---------"
+      Rails.logger.debug "--------- request.headers = " + request.headers.inspect + " ----------"
+      Rails.logger.debug "--------- request.body = " + request.body.inspect + " ---------"
     end
 
-    #Rails.logger.info "--------- auth_response = " + auth_response.inspect + " ----------"
-    #Rails.logger.info "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
-    Rails.logger.info "--------- auth_response.body = " + auth_response.body + " ----------"
+    #Rails.logger.debug "--------- auth_response = " + auth_response.inspect + " ----------"
+    #Rails.logger.debug "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
+    Rails.logger.debug "--------- auth_response.body = " + auth_response.body + " ----------"
 
     if test
       return auth_response
@@ -177,7 +178,7 @@ class AuthorizationServer
       result &&= validate_scope(client_request, token_claims) if result
     end
 
-    Rails.logger.info "----- valid_access_token? = " + result.to_s + " -----"
+    Rails.logger.debug "----- valid_access_token? = " + result.to_s + " -----"
     result
   end
 
@@ -194,11 +195,11 @@ class AuthorizationServer
 
   def validate_expiration(auth_response)
     if auth_response["expires_at"].blank?
-      Rails.logger.info "----- no expiration time provided in access token -----"
+      Rails.logger.debug "----- no expiration time provided in access token -----"
       # No expiration time provided
       true
     else
-      Rails.logger.info "----- auth_response['expires_at'] = " + auth_response["expires_at"].inspect + " -----"
+      Rails.logger.debug "----- auth_response['expires_at'] = " + auth_response["expires_at"].inspect + " -----"
       (auth_response["expires_at"].to_i >= Time.now.to_i)
     end
   end
@@ -234,7 +235,7 @@ class AuthorizationServer
   def validate_scope(client_request, token_claims)
     claims = token_claims.split[' ']
 
-    Rails.logger.info "----- claims = " + claims.inspect + " -----"
+    Rails.logger.debug "----- claims = " + claims.inspect + " -----"
     uri = URI(client_request.uri)
 
     # Remove initial '/' from path to get resource name
