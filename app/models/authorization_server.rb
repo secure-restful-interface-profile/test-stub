@@ -78,36 +78,48 @@ class AuthorizationServer
   #   +boolean+::           +true+ if access allowed, otherwise +false+
 
   def authorize_request(client_request, test = false)
-    # Get access token from client request
-    access_token = client_request.env["omniauth.auth"]
     #access_token = Application.test_access_token
 
-    Rails.logger.debug "********** Request = #{client_request.inspect} **********"
-    Rails.logger.debug "////////// Access token = #{access_token.inspect} //////////"
+    # Get access token from client request
+    authorization = client_request.env["HTTP_AUTHORIZATION"]
+    Rails.logger.debug "--------- authorization = #{authorization} ----------"
+    
+    if authorization
+      authorization = authorization.split(' ')
+      if authorization.first == 'Bearer'
+        access_token = authorization.last
+      end
 
-    # Call authorization server to perform introspection on access token
-    auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
-      # Pass access token as form data
-      request.body = { 
-        "client_id"             => Application.client_id, 
-        "client_assertion_type" => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-        "client_assertion"      => jwt_token, 
-        "token"                 => access_token 
-      }.to_param
+      Rails.logger.debug "********** Request = #{client_request.inspect} **********"
+      Rails.logger.debug "////////// Access token = #{access_token.inspect} //////////"
 
-      Rails.logger.debug "--------- request.headers = " + request.headers.inspect + " ----------"
-      Rails.logger.debug "--------- request.body = " + request.body.inspect + " ---------"
-    end
+      # Call authorization server to perform introspection on access token
+      auth_response = @connection.post @configuration["introspection_endpoint"] do |request|
+        # Pass access token as form data
+        request.body = { 
+          "client_id"             => Application.client_id, 
+          "client_assertion_type" => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+          "client_assertion"      => jwt_token, 
+          "token"                 => access_token 
+        }.to_param
 
-    #Rails.logger.debug "--------- auth_response = " + auth_response.inspect + " ----------"
-    #Rails.logger.debug "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
-    Rails.logger.debug "--------- auth_response.body = " + auth_response.body + " ----------"
+        Rails.logger.debug "--------- request.headers = " + request.headers.inspect + " ----------"
+        Rails.logger.debug "--------- request.body = " + request.body.inspect + " ---------"
+      end
 
-    if test
-      return auth_response
+      #Rails.logger.debug "--------- auth_response = " + auth_response.inspect + " ----------"
+      #Rails.logger.debug "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
+      Rails.logger.debug "--------- auth_response.body = " + auth_response.body + " ----------"
+
+      if test
+        return auth_response
+      else
+        # Use introspection info to determine validity of access token for request
+        valid_access_token?(client_request, auth_response)
+      end
     else
-      # Use introspection info to determine validity of access token for request
-      valid_access_token?(client_request, auth_response)
+      # No access token
+      false
     end
   end
 
