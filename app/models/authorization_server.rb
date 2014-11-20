@@ -234,7 +234,7 @@ class AuthorizationServer
     Rails.logger.debug "----- claims = #{claims.inspect} -----"
     Rails.logger.debug "----- client_request = #{client_request.inspect} -----"
 
-    uri = URI(client_request)
+    uri = URI(client_request.fullpath)
 
     # Parse path to get resource name
     resource = uri.path.split('/').last
