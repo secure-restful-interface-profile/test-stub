@@ -232,7 +232,7 @@ class AuthorizationServer
     claims = token_claims["scope"].split(' ')
 
     Rails.logger.debug "----- claims = #{claims.inspect} -----"
-    uri = URI(client_request.uri)
+    uri = URI(client_request)
 
     # Parse path to get resource name
     resource = uri.path.split('/').last
