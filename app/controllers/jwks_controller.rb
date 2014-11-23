@@ -1,23 +1,19 @@
 ##
 # = JSON Web Key Set (JWKS) Controller
 #
-# This class manages the jwks_uri API for the Test Stub
+# This class manages the jwks_uri API for the Test Stub.  The /jwks API is 
+# generally called when a JSON Web Token (JWT), signed by the Test Stub's 
+# private key, is sent to the authorization server for authentication.  The 
+# authorization server uses the public key returned by this API call to decode 
+# and authenticate the JWT.
 
 class JwksController < ApplicationController
 
   ## 
   # GET /jwks
   #
-  # This method is used by the authorization server to retrieve the public key
-  # of the test stub.  
-  # 
-  # The /jwks API is generally called when a JSON Web Token (JWT), signed by the 
-  # Test Stub's private key, is sent by the Test Stub to the authorization server 
-  # for authentication.  The authorization server uses the public key returned
-  # by this API call to decode and authenticate the JWT.
-  #
-  # The public key is returned as a JWK Set using the following
-  # format:
+  # Returns the JSON Web Key Set for the Test Stub, which includes our public
+  # key.  The public key is returned as a JWK Set using the following format:
   #
   # {"keys":
   #   [
