@@ -158,7 +158,7 @@ class AuthorizationServer
     {
       iss: Application.client_id,                   # Issuer (Resource Server)
       sub: Application.client_id,                   # Subject of request (Resource Server)
-      aud: "https://as-va.mitre.org/token",         # Intended audience (Authorization Server)
+      aud: "#{@auth_server_uri}/token",             # Intended audience (Authorization Server)
       iat: now,                                     # Time of issue
       exp: now + CLAIM_EXPIRATION,                  # Expiration time
       jti: "#{now}/#{SecureRandom.hex(18)}",        # Unique ID for request
