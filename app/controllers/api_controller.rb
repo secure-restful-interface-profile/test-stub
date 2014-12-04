@@ -46,6 +46,7 @@ class ApiController < ApplicationController
   #   List of resources in XML or JSON format.
 
   def show
+    Rails.logger.debug "====== request.headers['Authorization'] = #{request.headers['Authorization']} ======"
     @object = current_model.find(params[:id])
 
     respond_to do |format|
