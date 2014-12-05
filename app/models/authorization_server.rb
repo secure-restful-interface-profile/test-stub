@@ -10,8 +10,8 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
  
   ##
-  # This method initializes a new instance of the AuthorizationServer class and
-  # sets up the necessary configurations for the communicating with the server.
+  # Initializes a new instance of the AuthorizationServer class and sets up the 
+  # necessary configurations for the communicating with the server.
   #
   # Params:
   #   +auth_server_uri+::   URI of the authorization server
@@ -46,8 +46,8 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
  
   ##
-  # This method retrieves the public key for the authorization server from the 
-  # authorization server's jwks_uri endpoint.
+  # Retrieves the public key for the authorization server from the authorization 
+  # server's jwks_uri endpoint.
   #
   # Returns:
   #   +String+::            Public key for Authorization Server
@@ -66,7 +66,7 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
  
   ##
-  # This method determines whether the access token provided by the client is valid.
+  # Determines whether the access token provided by the client is valid.
   # To validate the token, the introspection endpoint of the authorization server
   # is called to retrieve the claims for the access token.  Once we have the claims,
   # we can validate whether data request falls within those claims.
@@ -75,7 +75,7 @@ class AuthorizationServer
   #   +client_request+::    Request hash from the client requesting information
   #
   # Returns:  
-  #   +boolean+::           +true+ if access allowed, otherwise +false+
+  #   +AuthorizedUser+::    Authorized user matching user_id, otherwise nil
 
   def authorize_request(client_request, test = false)
     #access_token = Application.test_access_token
@@ -108,7 +108,6 @@ class AuthorizationServer
       end
 
       Rails.logger.debug "--------- auth_response = " + auth_response.inspect + " ----------"
-      #Rails.logger.debug "--------- auth_response['valid'] = " + auth_response["valid"] + " ----------"
       Rails.logger.debug "--------- auth_response.body = " + auth_response.body + " ----------"
 
       if test
@@ -119,7 +118,7 @@ class AuthorizationServer
       end
     else
       # No access token
-      false
+      nil
     end
   end
 
@@ -128,8 +127,8 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
 
   ##
-  # This method creates a JSON Web Token (JWT) so that we can authenticate with
-  # the authorization server.
+  # Creates a JSON Web Token (JWT) so that we can authenticate with the 
+  # authorization server.
   #
   # Returns:
   #   ++::                  Signed JSON Web Token
@@ -143,11 +142,11 @@ class AuthorizationServer
 
   #-------------------------------------------------------------------------------
 
-  CLAIM_EXPIRATION = 3600         # Expiration in seconds
+  CLAIM_EXPIRATION = 60        # Expiration in seconds
 
   ##
-  # This method defines the claims for the JSON Web Token (JWT) we use to
-  # authenticate with the authorization server.
+  # Defines the claims for the JSON Web Token (JWT) we use to authenticate with 
+  # the authorization server.
   #
   # Returns:
   #   +Hash+::              Set of claims for JSON Web Token
@@ -156,30 +155,32 @@ class AuthorizationServer
     now = Time.now.to_i
 
     {
-      iss: Application.client_id,                   # Issuer (Resource Server)
-      sub: Application.client_id,                   # Subject of request (Resource Server)
-      aud: "#{@auth_server_uri}/token",             # Intended audience (Authorization Server)
-      iat: now,                                     # Time of issue
-      exp: now + CLAIM_EXPIRATION,                  # Expiration time
-      jti: "#{now}/#{SecureRandom.hex(18)}",        # Unique ID for request
+      iss: Application.client_id,               # Issuer (client ID from auth server)
+      sub: Application.client_id,               # Subject of request (client ID from auth server)
+      aud: "#{@auth_server_uri}/token",         # Intended audience (Authorization Server)
+      iat: now,                                 # Time of issue
+      exp: now + CLAIM_EXPIRATION,              # Expiration time
+      jti: "#{now}/#{SecureRandom.hex(18)}",    # Unique ID for request
     }
   end
 
   #-------------------------------------------------------------------------------
 
   ##
-  # This method validates the access token passed to us by the client by checking
-  # the type of information allowed by the access token and and verifying that the 
-  # request is consistent with those claims.
+  # Validates the access token passed to us by the client by checking the type of 
+  # information allowed by the access token and and verifying that the request is 
+  # consistent with those claims.
   #
   # Params:
   #   +client_request+::    Original request from the client seeking access
   #   +auth_response+::     Response from the Authorization Server introspection
   #
   # Returns:  
-  #   +boolean+::           +true+ if access allowed, otherwise +false+
+  #   +AuthorizedUser+::    Authorized user matching user_id, otherwise nil
 
-  def valid_access_token?(client_request, auth_response)
+  def validate_access_token(client_request, auth_response)
+    authorized_user = nil
+
     if result = (auth_response.status == 200)
       token_claims = JSON.parse(auth_response.body)
 
@@ -187,16 +188,18 @@ class AuthorizationServer
       result &&= token_claims["active"]
       result &&= validate_expiration(token_claims)              if result
       result &&= validate_scope(client_request, token_claims)   if result
+      authorized_user = validate_user(token_claims)             if result
     end
 
     Rails.logger.debug "----- valid_access_token? = #{result.to_s} -----"
-    result
+    authorized_user
   end
 
   #-------------------------------------------------------------------------------
  
   ##
-  # This method determines whether the access token has expired.
+  # Determines whether the access token has expired based on the expiration
+  # time included in the token.
   #
   # Params:
   #   +token_claims+::      Claims from access token introspection
@@ -219,7 +222,9 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
  
   ##
-  # This method determines whether the access token has expired.
+  # Determines whether the scope of the access token covers the resources
+  # specified in the request.  If the request specifies resources that are 
+  # not listed within the scope of the access token, the scope is invalid.
   #
   # Params:
   #   +client_request+::    Original request from the client seeking access
@@ -243,6 +248,27 @@ class AuthorizationServer
     Rails.logger.debug "----- resource = #{resource.inspect} -----"
 
     claims.include?(resource)
+  end
+
+  #-------------------------------------------------------------------------------
+ 
+  ##
+  # Validates the access token passed to us by the client by checking the type of 
+  # information allowed by the access token and and verifying that the request is 
+  # consistent with those claims.
+  #
+  # The user_id from the authorization server is treated as an opaque value (even
+  # if it may appear to have valuable subfields) to maximize compatibility across
+  # authorization server implementations.
+  #
+  # Params:
+  #   +token_claims+::      Claims from access token introspection
+  #
+  # Returns:  
+  #   +AuthorizedUser+::    Authorized user matching user_id, otherwise nil
+
+  def validate_user(token_claims)
+    AuthorizedUser.find_by(auth_server_user_id: token_claims["user_id"])
   end
 
 end

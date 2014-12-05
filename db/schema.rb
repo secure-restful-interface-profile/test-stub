@@ -11,7 +11,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140916161226) do
+ActiveRecord::Schema.define(version: 20141204172545) do
+
+  create_table "authorizations", force: true do |t|
+    t.integer  "patient_id"
+    t.integer  "authorized_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "authorized_idp_users", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "patient_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "authorized_users", force: true do |t|
+    t.text     "auth_server_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "conditions", force: true do |t|
     t.string   "text_status"

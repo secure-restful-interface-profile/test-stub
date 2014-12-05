@@ -3,6 +3,9 @@ class Patient < ActiveRecord::Base
   has_many :observations
   has_many :medications
   has_many :conditions
+
+  has_many :authorizations
+  has_many :authorized_users, :through => :authorizations
   
   rails_admin do 
     field :givenname do
