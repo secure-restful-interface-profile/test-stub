@@ -114,7 +114,7 @@ class AuthorizationServer
         return auth_response
       else
         # Use introspection info to determine validity of access token for request
-        valid_access_token?(client_request, auth_response)
+        validate_access_token(client_request, auth_response)
       end
     else
       # No access token
@@ -253,8 +253,9 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
  
   ##
-  # Validates the user_id returned by the authorization server introspection 
-  # by ensuring that a matching authorized user exists in our database.
+  # Validates the user_id returned by the token claims in the authorization server 
+  # introspection by ensuring that a matching authorized user exists in our 
+  # database.
   #
   # The user_id from the authorization server is treated as an opaque value (even
   # if it may appear to have valuable subfields) to maximize compatibility across
