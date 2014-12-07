@@ -253,13 +253,15 @@ class AuthorizationServer
   #-------------------------------------------------------------------------------
  
   ##
-  # Validates the access token passed to us by the client by checking the type of 
-  # information allowed by the access token and and verifying that the request is 
-  # consistent with those claims.
+  # Validates the user_id returned by the authorization server introspection 
+  # by ensuring that a matching authorized user exists in our database.
   #
   # The user_id from the authorization server is treated as an opaque value (even
   # if it may appear to have valuable subfields) to maximize compatibility across
   # authorization server implementations.
+  #
+  # The list of authorized users in the Test Stub database must be setup ahead of 
+  # time.
   #
   # Params:
   #   +token_claims+::      Claims from access token introspection
