@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<!--
+
+  Fivefish RDoc Generator
+  $Id$
+
+  Authors:
+  - Michael Granger <ged@FaerieMUD.org>
+
+ -->
+<html lang="en">
+<head>
+	<title>RDoc Documentation</title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+
+	<link href="." rel="prefix" />
+
+	<link href="./css/fivefish.min.css" rel="stylesheet" />
+
+	<script src="./js/jquery-1.7.1.min.js" type="text/javascript"
+		defer="defer" charset="utf-8"></script>
+	<script src="./js/bootstrap.min.js" type="text/javascript"
+		defer="defer" charset="utf-8"></script>
+	<script src="./js/searchindex.js" type="text/javascript"
+		defer="defer" charset="utf-8"></script>
+	<script src="./js/fivefish.min.js" type="text/javascript"
+		defer="defer" charset="utf-8" onload="initFivefish()"></script>
+</head>
+
+<body class="class-page">
+
+	<nav class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+
+				<a class="brand"
+					href="./index.html">RDoc Documentation</a>
+
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li>
+							<a href="#"
+								class="dropdown-toggle"
+								data-dropdown="#class-dropdown">
+								Classes
+								<b class="caret"></b>
+							</a>
+						</li>
+						<li>
+							<a href="#"
+								class="dropdown-toggle"
+								data-dropdown="#file-dropdown">
+								Files
+								<b class="caret"></b>
+							</a>
+						</li>
+					</ul>
+				</div><!--/.nav-collapse -->
+				<span class="pull-right">
+					<form class="navbar-search">
+						<input type="hidden" id="navbar-search-target" value="" />
+						<input type="text" class="search-query" value=""
+							placeholder="Method, Class, or Filename" />
+					</form>
+				</span>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		
+		<header class="hero-unit">
+			<hgroup>
+								  												<h1 class="class"
+					rel="popover"
+					data-original-title="In files"
+					data-content="app/models/authorization_server.rb"
+					>AuthorizationServer</h1>
+				</p>
+							</hgroup>
+			<span class="label">class</span>
+		</header>
+
+		<section class="module-relations">
+			<dl>
+								<dt>Superclass</dt>
+								<dd class="superclass">Object</dd>
+								
+				
+							</dl>
+		</section>
+
+		<section class="description">
+			
+<p>= <a href="AuthorizationServer.html">AuthorizationServer</a> model</p>
+
+<p>This class manages the interface to the <a
+href="Authorization.html">Authorization</a> Server.</p>
+		</section>
+
+				<section id="5Buntitled-5D" class="documentation-section">
+			
+		    
+						<!-- Constants -->
+			<section class="constants-list">
+				<header>
+					<h3>Constants</h3>
+				</header>
+				<dl>
+									<dt id="CLAIM_EXPIRATION"><i class="icon-generic"></i>CLAIM_EXPIRATION</dt>
+										<dd class="description"></dd>
+													</dl>
+			</section>
+			
+						<!-- Attributes -->
+			<section class="attributes-list">
+				<header>
+					<h3>Attributes</h3>
+				</header>
+				<dl>
+									<dt id="attribute-i-configuration"><i class="icon-generic"></i>configuration<span
+						class="attribute-access-type">[RW]</span></dt>
+										<dd class="description"></dd>
+														<dt id="attribute-i-connection"><i class="icon-generic"></i>connection<span
+						class="attribute-access-type">[RW]</span></dt>
+										<dd class="description"></dd>
+														<dt id="attribute-i-uri"><i class="icon-generic"></i>uri<span
+						class="attribute-access-type">[RW]</span></dt>
+										<dd class="description"></dd>
+													</dl>
+			</section>
+			
+			<!-- Methods -->
+						
+						<section class="public-methods class-methods methods">
+				<header>
+					<h3>Public Class Methods</h3>
+				</header>
+
+								<a name="method-c-new">anchor</a>
+				<div id="method-c-new-doc" class="method">
+
+					<header>
+											<i class="icon-generic"></i>
+						<span class="method-name">new</span><span 
+							class="method-args">(auth_server_uri, rsrc_server_uri)</span>
+										</header>
+
+					<div class="method-description">
+											<p>Initializes a new instance of the <a
+href="AuthorizationServer.html">AuthorizationServer</a> class and sets up
+the necessary configurations for the communicating with the server.</p>
+
+<p>Params:  <code>auth_server_uri</code>:: URI of the authorization server 
+<code>rsrc_server_uri</code>:: URI of protected resource server</p>
+
+<p>Attributes set:  +@uri+:: URI of the authorization server  +@connection+::
+Connection object to be used for further communication  +@configuration+::
+Hash of server capabilities and endpoints</p>					
+											<div class="method-source-code" id="new-source">
+							<pre class="prettyprint linenums"><code 
+								class="language-ruby"><span class="ruby-comment"># File app/models/authorization_server.rb, line 25</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">auth_server_uri</span>, <span class="ruby-identifier">rsrc_server_uri</span>)
+  <span class="ruby-ivar">@auth_server_uri</span> = <span class="ruby-identifier">auth_server_uri</span>
+  <span class="ruby-ivar">@rsrc_server_uri</span> = <span class="ruby-identifier">rsrc_server_uri</span>
+
+  <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;========== @auth_server_uri = &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@auth_server_uri</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot;==========&quot;</span>
+  <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;========== @rsrc_server_uri = &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@rsrc_server_uri</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot;==========&quot;</span>
+
+  <span class="ruby-comment"># Establish a connection object that will be reused during communication </span>
+  <span class="ruby-comment"># with the authorization server</span>
+
+  <span class="ruby-ivar">@connection</span> = <span class="ruby-constant">Faraday</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@auth_uri</span>, <span class="ruby-value">:ssl</span> =<span class="ruby-operator">&gt;</span> {<span class="ruby-value">:verify</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">false</span>}) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">builder</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">builder</span>.<span class="ruby-identifier">request</span>     <span class="ruby-value">:url_encoded</span>    <span class="ruby-comment"># Encode request parameters as &quot;www-form-urlencoded&quot;</span>
+    <span class="ruby-identifier">builder</span>.<span class="ruby-identifier">response</span>    <span class="ruby-value">:logger</span>         <span class="ruby-comment"># Log request and response to STDOUT</span>
+    <span class="ruby-identifier">builder</span>.<span class="ruby-identifier">adapter</span>     <span class="ruby-value">:net_http</span>       <span class="ruby-comment"># Perform requests with Net::HTTP</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Get authorization server endpoints and configuration settings</span>
+  <span class="ruby-identifier">response</span> = <span class="ruby-ivar">@connection</span>.<span class="ruby-identifier">get</span>(<span class="ruby-node">&quot;#{@auth_server_uri}/.well-known/openid-configuration&quot;</span>)
+  <span class="ruby-ivar">@configuration</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>)
+<span class="ruby-keyword">end</span></code></pre>
+						</div>
+										</div>
+
+					
+									</div>
+				
+			</section>
+			
+			
+			
+			
+			
+									
+						<section class="public-methods instance-methods methods">
+				<header>
+					<h3>Public Instance Methods</h3>
+				</header>
+
+								<a name="method-i-authorize_request">anchor</a>
+				<div id="method-i-authorize_request-doc" class="method">
+
+					<header>
+											<i class="icon-generic"></i>
+						<span class="method-name">authorize_request</span><span 
+							class="method-args">(client_request, test = false)</span>
+										</header>
+
+					<div class="method-description">
+											<p>Determines whether the access token provided by the client is valid. To
+validate the token, the introspection endpoint of the authorization server
+is called to retrieve the claims for the access token. Once we have the
+claims, we can validate whether data request falls within those claims.</p>
+
+<p>Params:  <code>client_request</code>:: Request hash from the client
+requesting information</p>
+
+<p>Returns:<br>  <code>AuthorizedUser</code>:: Authorized user matching
+user_id, otherwise nil</p>					
+											<div class="method-source-code" id="authorize_request-source">
+							<pre class="prettyprint linenums"><code 
+								class="language-ruby"><span class="ruby-comment"># File app/models/authorization_server.rb, line 80</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">authorize_request</span>(<span class="ruby-identifier">client_request</span>, <span class="ruby-identifier">test</span> = <span class="ruby-keyword">false</span>)
+  <span class="ruby-comment">#access_token = Application.test_access_token</span>
+
+  <span class="ruby-comment"># Get access token from client request</span>
+  <span class="ruby-identifier">authorization</span> = <span class="ruby-identifier">client_request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;HTTP_AUTHORIZATION&quot;</span>]
+  <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;--------- authorization = #{authorization} ----------&quot;</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">authorization</span>
+    <span class="ruby-identifier">authorization</span> = <span class="ruby-identifier">authorization</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39; &#39;</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">authorization</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;Bearer&#39;</span>
+      <span class="ruby-identifier">access_token</span> = <span class="ruby-identifier">authorization</span>.<span class="ruby-identifier">last</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;********** Request = #{client_request.inspect} **********&quot;</span>
+    <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;////////// Access token = #{access_token.inspect} //////////&quot;</span>
+
+    <span class="ruby-comment"># Call authorization server to perform introspection on access token</span>
+    <span class="ruby-identifier">auth_response</span> = <span class="ruby-ivar">@connection</span>.<span class="ruby-identifier">post</span> <span class="ruby-ivar">@configuration</span>[<span class="ruby-string">&quot;introspection_endpoint&quot;</span>] <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">request</span><span class="ruby-operator">|</span>
+      <span class="ruby-comment"># Pass access token as form data</span>
+      <span class="ruby-identifier">request</span>.<span class="ruby-identifier">body</span> = { 
+        <span class="ruby-string">&quot;client_id&quot;</span>             =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Application</span>.<span class="ruby-identifier">client_id</span>, 
+        <span class="ruby-string">&quot;client_assertion_type&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;urn:ietf:params:oauth:client-assertion-type:jwt-bearer&quot;</span>,
+        <span class="ruby-string">&quot;client_assertion&quot;</span>      =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">jwt_token</span>, 
+        <span class="ruby-string">&quot;token&quot;</span>                 =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">access_token</span> 
+      }.<span class="ruby-identifier">to_param</span>
+
+      <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;--------- request.headers = &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">request</span>.<span class="ruby-identifier">headers</span>.<span class="ruby-identifier">inspect</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot; ----------&quot;</span>
+      <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;--------- request.body = &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">request</span>.<span class="ruby-identifier">body</span>.<span class="ruby-identifier">inspect</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot; ---------&quot;</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;--------- auth_response = &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">auth_response</span>.<span class="ruby-identifier">inspect</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot; ----------&quot;</span>
+    <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;--------- auth_response.body = &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">auth_response</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot; ----------&quot;</span>
+
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">test</span>
+      <span class="ruby-keyword">return</span> <span class="ruby-identifier">auth_response</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-comment"># Use introspection info to determine validity of access token for request</span>
+      <span class="ruby-identifier">validate_access_token</span>(<span class="ruby-identifier">client_request</span>, <span class="ruby-identifier">auth_response</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-comment"># No access token</span>
+    <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></code></pre>
+						</div>
+										</div>
+
+					
+									</div>
+								<a name="method-i-public_key">anchor</a>
+				<div id="method-i-public_key-doc" class="method">
+
+					<header>
+											<i class="icon-generic"></i>
+						<span class="method-name">public_key</span><span 
+							class="method-args">()</span>
+										</header>
+
+					<div class="method-description">
+											<p>Retrieves the public key for the authorization server from the
+authorization server&#39;s jwks_uri endpoint.</p>
+
+<p>Returns:  <code>String</code>:: Public key for <a
+href="Authorization.html">Authorization</a> Server</p>					
+											<div class="method-source-code" id="public_key-source">
+							<pre class="prettyprint linenums"><code 
+								class="language-ruby"><span class="ruby-comment"># File app/models/authorization_server.rb, line 55</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">public_key</span>
+  <span class="ruby-comment"># The public key is provided as a JSON Web Key Set (JWKS) by the jwks_uri </span>
+  <span class="ruby-comment"># endpoint of the Authorization Server.</span>
+
+  <span class="ruby-identifier">response</span> = <span class="ruby-ivar">@connection</span>.<span class="ruby-identifier">get</span>(<span class="ruby-ivar">@configuration</span>[<span class="ruby-string">&quot;jwks_uri&quot;</span>])
+  <span class="ruby-identifier">jwks</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>)
+
+  <span class="ruby-comment"># Use only first key returned and retrieve the &quot;n&quot; field of that key</span>
+  <span class="ruby-identifier">jwks</span>[<span class="ruby-string">&quot;keys&quot;</span>].<span class="ruby-identifier">first</span>[<span class="ruby-string">&quot;n&quot;</span>]
+<span class="ruby-keyword">end</span></code></pre>
+						</div>
+										</div>
+
+					
+									</div>
+				
+			</section>
+			
+			
+			
+			
+			
+						
+		</section>
+		
+
+		<hr>
+
+		<footer>
+			<div class="container">
+				<span id="rdoc-version">Generated by RDoc 4.2.0</span> using the
+				<a id="generator-version"
+					href="http://deveiate.org/fivefish">Fivefish RDoc 0.1.0</a> generator.
+			</div>
+		</footer>
+	</div> <!-- /container -->
+
+	<!-- Class dropdown menu -->
+	<div id="class-dropdown" class="dropdown-menu has-scroll">
+	<ul>
+			<li><a href="./ApiController.html">ApiController</a></li>
+			<li><a href="./Application.html">Application</a></li>
+			<li><a href="./ApplicationController.html">ApplicationController</a></li>
+			<li><a href="./Authorization.html">Authorization</a></li>
+			<li><a href="./AuthorizationServer.html">AuthorizationServer</a></li>
+			<li><a href="./AuthorizedUser.html">AuthorizedUser</a></li>
+			<li><a href="./HomeController.html">HomeController</a></li>
+			<li><a href="./JwksController.html">JwksController</a></li>
+		</ul>
+	</div>
+
+	<!-- File dropdown menu -->
+	<div id="file-dropdown" class="dropdown-menu has-scroll">
+	<ul>
+			<li><a href="./app/assets/javascripts/api_js_coffee.html">api.js.coffee</a></li>
+			<li><a href="./app/assets/javascripts/application_js.html">application.js</a></li>
+			<li><a href="./app/assets/javascripts/home_js_coffee.html">home.js.coffee</a></li>
+			<li><a href="./app/assets/javascripts/jwks_js_coffee.html">jwks.js.coffee</a></li>
+			<li><a href="./app/assets/stylesheets/api_css_scss.html">api.css.scss</a></li>
+			<li><a href="./app/assets/stylesheets/application_css_scss.html">application.css.scss</a></li>
+			<li><a href="./app/assets/stylesheets/bootstrap_and_overrides_css_scss.html">bootstrap_and_overrides.css.scss</a></li>
+			<li><a href="./app/assets/stylesheets/home_css_scss.html">home.css.scss</a></li>
+			<li><a href="./app/assets/stylesheets/jwks_css_scss.html">jwks.css.scss</a></li>
+			<li><a href="./lib/tasks/doc_rake.html">doc.rake</a></li>
+		</ul>
+	</div>
+
+</body>
+</html>
