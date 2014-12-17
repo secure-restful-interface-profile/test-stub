@@ -214,7 +214,7 @@ class AuthorizationServer
       true
     else
       Rails.logger.debug "----- token_claims['exp'] = #{token_claims["exp"].inspect} -----"
-      (token_claims["exp"] >= Time.now.to_i)
+      (token_claims["exp"].to_i >= Time.now.to_i)
     end
   end
 
