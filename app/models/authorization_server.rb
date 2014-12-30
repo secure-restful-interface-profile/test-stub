@@ -185,7 +185,7 @@ class AuthorizationServer
     result = :ok
     good_scope = false
 
-    if good = (auth_response.status == :ok)
+    if good = (auth_response.status == 200)
       token_claims = JSON.parse(auth_response.body)
 
       # Authorize request based on claims of access token
