@@ -104,9 +104,10 @@ class ApiController < ApplicationController
   # are handled in the public methods of this controller.
   #
   # Returns:
-  #   Unauthorized 401 if the access token is invalid.  Otherwise, the authorized
-  #   user identified and validated in the access token is returned in the
-  #   @authorized_user instance variable.
+  #   Unauthorized 401 if the access token is invalid.
+  #   Forbidden 403 if no matching authorized user is found.
+  #   Otherwise, the authorized user identified and validated in the access token 
+  #   is returned in the @authorized_user instance variable.
 
   def verify_access_token
     Rails.logger.debug "====== request.headers['Authorization'] = #{request.headers['Authorization']} ======"
@@ -114,10 +115,11 @@ class ApiController < ApplicationController
     server = AuthorizationServer.new(Application.authorization_server,
                                           Application.resource_server)
 
-    @authorized_user = server.authorize_request(request)
+    result, @authorized_user = server.authorize_request(request)
     Rails.logger.debug "------ authorized_user = #{@authorized_user.inspect} ------"
 
-    head :unauthorized if @authorized_user.nil?
+    # If the result is OK, proceed with the operation
+    head result unless result == :ok
   end
 
   #-------------------------------------------------------------------------------

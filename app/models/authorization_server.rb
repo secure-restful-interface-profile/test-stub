@@ -78,8 +78,6 @@ class AuthorizationServer
   #   +AuthorizedUser+::    Authorized user matching user_id, otherwise nil
 
   def authorize_request(client_request, test = false)
-    #access_token = Application.test_access_token
-
     # Get access token from client request
     authorization = client_request.env["HTTP_AUTHORIZATION"]
     Rails.logger.debug "--------- authorization = #{authorization} ----------"
@@ -171,28 +169,37 @@ class AuthorizationServer
   # information allowed by the access token and and verifying that the request is 
   # consistent with those claims.
   #
+  # If the token is invalid, :unauthorized is returned.  If a matching authorized 
+  # user cannot be found, :forbidden is returned.
+  #
   # Params:
   #   +client_request+::    Original request from the client seeking access
   #   +auth_response+::     Response from the Authorization Server introspection
   #
   # Returns:  
+  #   +Result+::            Result code (:ok, :unauthorized, :forbidden)
   #   +AuthorizedUser+::    Authorized user matching user_id, otherwise nil
 
   def validate_access_token(client_request, auth_response)
     authorized_user = nil
+    result = :ok
+    good_scope = false
 
-    if result = (auth_response.status == 200)
+    if good = (auth_response.status == :ok)
       token_claims = JSON.parse(auth_response.body)
 
       # Authorize request based on claims of access token
-      result &&= token_claims["active"]
-      result &&= validate_expiration(token_claims)              if result
-      result &&= validate_scope(client_request, token_claims)   if result
-      authorized_user = validate_user(token_claims)             if result
+      good = token_claims["active"]
+      good = validate_expiration(token_claims)                    if good
+      good_scope = validate_scope(client_request, token_claims)   if good
+      good, authorized_user = validate_user(token_claims)         if good && good_scope
     end
 
+    result = :forbidden      unless good_scope
+    result = :unauthorized   unless good
+
     Rails.logger.debug "----- valid_access_token? = #{result.to_s} -----"
-    authorized_user
+    return result, authorized_user
   end
 
   #-------------------------------------------------------------------------------
@@ -210,7 +217,6 @@ class AuthorizationServer
   def validate_expiration(token_claims)
     if token_claims["exp"].blank?
       Rails.logger.debug "----- no expiration time provided in access token -----"
-      # No expiration time provided
       true
     else
       Rails.logger.debug "----- token_claims['exp'] = #{token_claims["exp"].inspect} -----"
@@ -267,10 +273,13 @@ class AuthorizationServer
   #   +token_claims+::      Claims from access token introspection
   #
   # Returns:  
+  #   +Boolean+::           +true+ if user matches user_id, otherise false
   #   +AuthorizedUser+::    Authorized user matching user_id, otherwise nil
 
   def validate_user(token_claims)
-    AuthorizedUser.find_by(auth_server_user_id: token_claims["user_id"])
+    authorized_user = AuthorizedUser.find_by(
+                                    auth_server_user_id: token_claims["user_id"])
+    return !authorized_user.nil?, authorized_user
   end
 
 end
